@@ -44,16 +44,33 @@ Provide:
 Keep the response under 150 words.
 """
 
-    response = requests.post(
-        OLLAMA_URL,
-        json={
-            "model": "llama3.2:3b",
-            "prompt": prompt,
-            "stream": False
-        },
-        timeout=120
-    )
+    try:
 
-    response.raise_for_status()
+        response = requests.post(
+            OLLAMA_URL,
+            json={
+                "model": "llama3.2:3b",
+                "prompt": prompt,
+                "stream": False
+            },
+            timeout=30
+        )
 
-    return response.json()["response"]
+        response.raise_for_status()
+
+        return response.json()["response"]
+
+    except Exception:
+        return """
+⚠️ AI Assistant is available only in the local version of this project.
+
+The deployed Streamlit version does not run Ollama locally, so live LLM analysis is disabled.
+
+You can still:
+• Explore all dashboard filters
+• View KPIs
+• Analyze charts
+• Generate executive reports
+
+To use the AI assistant, run the project locally with Ollama installed.
+"""
