@@ -45,16 +45,6 @@ def calculate_kpis(df):
         "Best Category": best_category
     }
 
-    return {
-        "Revenue": round(total_revenue, 2),
-        "Profit": round(total_profit, 2),
-        "Orders": total_orders,
-        "Customers": total_customers,
-        "Profit Margin": round(profit_margin, 2),
-        "Average Order Value": round(avg_order_value, 2),
-        "Best Region": best_region,
-        "Best Category": best_category,
-    }
 
 
 def revenue_by_region(df):
@@ -101,40 +91,45 @@ def top_products(df):
     )
 
 def executive_summary(df):
+    if df.empty:
+        return {
+            "Health": "No Data",
+            "Best Region": "-",
+            "Best Category": "-",
+            "Top Product": "-",
+            "Recommendation": "No data available for analysis."
+        }
+
+    total_sales = df["Sales"].sum()
+    total_profit = df["Profit"].sum()
+
+    margin = (
+        (total_profit / total_sales) * 100
+        if total_sales > 0 else 0
+    )
 
     revenue_region = (
-        df.groupby("Region")["Sales"]
-        .sum()
-        .idxmax()
+        df.groupby("Region")["Sales"].sum().idxmax()
     )
 
     profit_category = (
-        df.groupby("Category")["Profit"]
-        .sum()
-        .idxmax()
+        df.groupby("Category")["Profit"].sum().idxmax()
     )
 
     top_product = (
-        df.groupby("Product_Name")["Profit"]
-        .sum()
-        .idxmax()
+        df.groupby("Product_Name")["Profit"].sum().idxmax()
     )
 
-    margin = (
-        df["Profit"].sum() /
-        df["Sales"].sum()
-    ) * 100
-
     if margin > 15:
-        health = "🟢 Healthy"
+        health = "Healthy"
     elif margin > 10:
-        health = "🟡 Moderate"
+        health = "Moderate"
     else:
-        health = "🔴 Needs Attention"
+        health = "Needs Attention"
 
     recommendation = (
-        f"Increase investment in {revenue_region} "
-        f"and focus on expanding {profit_category}."
+        f"Review performance in {revenue_region} "
+        f"and evaluate profitability in {profit_category}."
     )
 
     return {
